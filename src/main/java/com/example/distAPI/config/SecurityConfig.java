@@ -17,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -28,13 +29,14 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder; 
 
     @Bean
-    public JwtAuthFilter jwtFilter() {
+    public JwtAuthFilter jwtAuthFilter() {
         return new JwtAuthFilter(jwtService, usuarioService);
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(usuarioService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(usuarioService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
@@ -51,14 +53,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Libere as rotas da sua API de Delivery aqui (você pode ajustar depois)
-                        .requestMatchers("/api/v1/usuarios/**").permitAll()
-                        .requestMatchers("/api/v1/clientes/**").permitAll()
-                        .requestMatchers("/api/v1/produtos/**").permitAll()
-                        .anyRequest().authenticated()
+                    // Libera o login e o Swagger para todos
+                    .requestMatchers("/api/v1/auth/login").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                    
+                    .requestMatchers(HttpMethod.POST, "/api/v1/vendedores").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/clientes").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/produtos/**")
+                    .hasAnyRole("ADMIN","VENDEDOR")
+
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/produtos/**")
+                    .hasRole("ADMIN")
+
+                    .requestMatchers("/api/v1/administradores/**")
+                    .hasRole("ADMIN")
+                    
+                    // Todo o resto precisa de autenticação (Token)
+                    .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
