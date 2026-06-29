@@ -62,6 +62,37 @@ public class ClienteController {
         }).orElseGet(() -> new ResponseEntity<>("Cliente não encontrado.", HttpStatus.NOT_FOUND));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(
+            @PathVariable Long id,
+            @RequestBody ClienteDTO dto) {
+
+        return service.obterPorId(id)
+                .map(entity -> {
+
+                    try {
+
+                        Cliente cliente = converter(dto);
+                        cliente.setId(entity.getId());
+
+                        service.salvar(cliente);
+
+                        return ResponseEntity.ok(
+                                ClienteDTO.create(cliente));
+
+                    } catch (RegraNegocioException e) {
+
+                        return ResponseEntity
+                                .badRequest()
+                                .body(e.getMessage());
+                    }
+
+                }).orElseGet(() ->
+                        new ResponseEntity<>(
+                                "Cliente não encontrado",
+                                HttpStatus.NOT_FOUND));
+    }
+
     private Cliente converter(ClienteDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Cliente.class);

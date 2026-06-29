@@ -3,6 +3,13 @@ package com.example.distAPI.api.dto;
 import com.example.distAPI.model.entity.Produto;
 import com.example.distAPI.model.entity.StatusProduto;
 import org.modelmapper.ModelMapper;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 
 public class ProdutoDTO {

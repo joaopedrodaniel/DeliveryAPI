@@ -2,7 +2,11 @@ package com.example.distAPI.service;
 
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Produto;
+import com.example.distAPI.model.entity.StatusProduto;
 import com.example.distAPI.model.repository.ProdutoRepository;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,20 @@ public class ProdutoService {
 
     public List<Produto> listar() {
         return repository.findAll();
+    }
+
+    public List<Produto> buscar(String nome, StatusProduto status) {
+        Produto filtro = new Produto();
+        filtro.setNome(nome);
+        filtro.setStatus(status);
+
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        Example<Produto> example = Example.of(filtro, matcher);
+        
+        return repository.findAll(example); 
     }
 
     @Transactional

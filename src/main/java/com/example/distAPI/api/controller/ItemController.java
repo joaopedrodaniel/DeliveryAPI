@@ -62,6 +62,23 @@ public class ItemController {
         }).orElseGet(() -> new ResponseEntity<>("Item não encontrado.", HttpStatus.NOT_FOUND));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(
+            @PathVariable Long id,
+            @RequestBody ItemDTO dto) {
+        return service.obterPorId(id).map(itemExistente -> {
+            try {
+                Item itemAtualizado = converter(dto);
+                itemAtualizado.setId(itemExistente.getId());
+                service.atualizar(itemAtualizado);
+                ModelMapper modelMapper = new ModelMapper();
+                return ResponseEntity.ok(modelMapper.map(itemAtualizado, ItemDTO.class));
+            } catch (RegraNegocioException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }).orElseGet(() -> new ResponseEntity<>("Item não encontrado.", HttpStatus.NOT_FOUND));
+    }
+
     private Item converter(ItemDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Item.class);

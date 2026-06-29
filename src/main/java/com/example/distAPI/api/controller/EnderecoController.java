@@ -62,6 +62,23 @@ public class EnderecoController {
         }).orElseGet(() -> new ResponseEntity<>("Endereço não encontrado.", HttpStatus.NOT_FOUND));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(
+            @PathVariable Long id,
+            @RequestBody EnderecoDTO dto) {
+        return service.obterPorId(id).map(endereco -> {
+            try {
+                Endereco enderecoAtualizado = converter(dto);
+                enderecoAtualizado.setId(endereco.getId());
+                service.atualizar(enderecoAtualizado);
+                ModelMapper modelMapper = new ModelMapper();
+                return new ResponseEntity<>(modelMapper.map(enderecoAtualizado, EnderecoDTO.class), HttpStatus.OK);
+            } catch (RegraNegocioException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }).orElseGet(() -> new ResponseEntity<>("Endereço não encontrado.", HttpStatus.NOT_FOUND));
+    }
+
     private Endereco converter(EnderecoDTO dto) {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(dto, Endereco.class);

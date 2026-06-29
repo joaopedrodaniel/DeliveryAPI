@@ -19,6 +19,15 @@ public class ItemService {
     }
 
     @Transactional
+    public Item atualizar(Item item) {
+        if (item.getId() == null) {
+            throw new RegraNegocioException("Item não encontrado para atualização.");
+        }
+        validar(item);
+        return repository.save(item);
+    }
+
+    @Transactional
     public Item salvar(Item item) {
         validar(item);
         return repository.save(item);

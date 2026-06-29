@@ -2,7 +2,9 @@ package com.example.distAPI.service;
 
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Cliente;
+import com.example.distAPI.model.entity.PerfilUsuario;
 import com.example.distAPI.model.repository.ClienteRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +15,18 @@ import java.util.Optional;
 public class ClienteService {
 
     private final ClienteRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ClienteService(ClienteRepository repository) {
+    public ClienteService(ClienteRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public Cliente salvar(Cliente cliente) {
         validar(cliente);
+        cliente.setSenha(passwordEncoder.encode(cliente.getSenha()));
+        cliente.setPerfil(PerfilUsuario.CLIENTE);
         return repository.save(cliente);
     }
 
@@ -41,13 +47,22 @@ public class ClienteService {
     }
 
     public void validar(Cliente cliente) {
-        // Exemplo de validação, assumindo que as propriedades vêm da classe Usuario
+
         if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {
             throw new RegraNegocioException("Informe um Nome válido.");
         }
+
         if (cliente.getEmail() == null || cliente.getEmail().trim().isEmpty()) {
             throw new RegraNegocioException("Informe um Email válido.");
         }
+
+        repository.findByEmail(cliente.getEmail())
+                .ifPresent(c -> {
+                    if (!c.getId().equals(cliente.getId())) {
+                        throw new RegraNegocioException("Já existe um cliente cadastrado com este e-mail.");
+                    }
+                });
+
         if (cliente.getSenha() == null || cliente.getSenha().trim().isEmpty()) {
             throw new RegraNegocioException("A senha é obrigatória.");
         }

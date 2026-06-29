@@ -32,6 +32,23 @@ public class VendedorController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(
+            @PathVariable Long id,
+            @RequestBody VendedorDTO dto) {
+        return service.obterPorId(id).map(entity -> {
+            try {
+                Vendedor vendedor = converter(dto);
+                vendedor.setId(entity.getId());
+                service.atualizar(vendedor);
+                ModelMapper modelMapper = new ModelMapper();
+                return ResponseEntity.ok(modelMapper.map(vendedor, VendedorDTO.class));
+            } catch (RegraNegocioException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }).orElseGet(() -> new ResponseEntity<>("Vendedor não encontrado.", HttpStatus.NOT_FOUND));
+    }
+            
     @GetMapping
     public ResponseEntity<List<VendedorDTO>> listar() {
         ModelMapper modelMapper = new ModelMapper();

@@ -1,8 +1,10 @@
 package com.example.distAPI.api.controller;
 
 import com.example.distAPI.api.dto.AdministradorDTO;
+import com.example.distAPI.api.dto.ClienteDTO;
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Administrador;
+import com.example.distAPI.model.entity.Cliente;
 import com.example.distAPI.service.AdministradorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,6 +62,37 @@ public class AdministradorController {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
         }).orElseGet(() -> new ResponseEntity<>("Administrador não encontrado.", HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(
+            @PathVariable Long id,
+            @RequestBody AdministradorDTO dto) {
+
+        return service.obterPorId(id)
+                .map(entity -> {
+
+                    try {
+
+                        Administrador administrador = converter(dto);
+                        administrador.setId(entity.getId());
+
+                        service.salvar(administrador);
+
+                        return ResponseEntity.ok(
+                                AdministradorDTO.create(administrador));
+
+                    } catch (RegraNegocioException e) {
+
+                        return ResponseEntity
+                                .badRequest()
+                                .body(e.getMessage());
+                    }
+
+                }).orElseGet(() ->
+                        new ResponseEntity<>(
+                                "Administrador não encontrado",
+                                HttpStatus.NOT_FOUND));
     }
 
     private Administrador converter(AdministradorDTO dto) {

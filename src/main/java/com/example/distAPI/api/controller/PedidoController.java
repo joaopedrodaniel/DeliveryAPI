@@ -2,6 +2,7 @@ package com.example.distAPI.api.controller;
 
 import com.example.distAPI.api.dto.PedidoDTO;
 import com.example.distAPI.exception.RegraNegocioException;
+import com.example.distAPI.model.entity.OrderStatus;
 import com.example.distAPI.model.entity.Pedido;
 import com.example.distAPI.service.PedidoService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,70 @@ public class PedidoController {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
         }).orElseGet(() -> new ResponseEntity<>("Pedido não encontrado.", HttpStatus.NOT_FOUND));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> atualizarStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        try {
+
+            Pedido pedido = service.atualizarStatus(
+                    id,
+                    Enum.valueOf(OrderStatus.class, status));
+
+            return ResponseEntity.ok(PedidoDTO.create(pedido));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<?> cancelar(
+            @PathVariable Long id) {
+
+        try {
+
+            Pedido pedido = service.cancelar(id);
+
+            return ResponseEntity.ok(
+                    PedidoDTO.create(pedido));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/cliente/{id}")
+    public ResponseEntity<List<PedidoDTO>> listarPorCliente(
+            @PathVariable Long id) {
+
+        List<PedidoDTO> pedidos = service
+                .listarPorCliente(id)
+                .stream()
+                .map(PedidoDTO::create)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/vendedor/{id}")
+    public ResponseEntity<List<PedidoDTO>> listarPorVendedor(
+            @PathVariable Long id) {
+
+        List<PedidoDTO> pedidos = service
+                .listarPorVendedor(id)
+                .stream()
+                .map(PedidoDTO::create)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pedidos);
     }
 
     private Pedido converter(PedidoDTO dto) {

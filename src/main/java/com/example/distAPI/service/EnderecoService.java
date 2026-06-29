@@ -19,6 +19,15 @@ public class EnderecoService {
     }
 
     @Transactional
+    public Endereco atualizar(Endereco endereco) {
+        if (endereco.getId() == null) {
+            throw new RegraNegocioException("Endereço não encontrado para atualização.");
+        }
+        validar(endereco);
+        return repository.save(endereco);
+    }
+
+    @Transactional
     public Endereco salvar(Endereco endereco) {
         validar(endereco);
         return repository.save(endereco);

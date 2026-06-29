@@ -1,6 +1,5 @@
 package com.example.distAPI.api.dto;
 
-import com.example.distAPI.model.entity.Cliente;
 import com.example.distAPI.model.entity.Endereco;
 import lombok.AllArgsConstructor;
 import lombok.Data;

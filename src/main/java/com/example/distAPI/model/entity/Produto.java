@@ -17,6 +17,9 @@ public class Produto {
     private String nome;
     private Double preco;
     private Integer estoque;
+    private String descricao;
+    private String foto;
+    private String categoria;
 
     @Enumerated(EnumType.STRING)
     private StatusProduto status;

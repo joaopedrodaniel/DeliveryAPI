@@ -2,7 +2,13 @@ package com.example.distAPI.api.dto;
 
 import com.example.distAPI.model.entity.Item;
 import org.modelmapper.ModelMapper;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemDTO {
 
     private Long id;

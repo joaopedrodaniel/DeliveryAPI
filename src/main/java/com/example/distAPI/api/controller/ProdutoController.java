@@ -3,6 +3,7 @@ package com.example.distAPI.api.controller;
 import com.example.distAPI.api.dto.ProdutoDTO;
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Produto;
+import com.example.distAPI.model.entity.StatusProduto;
 import com.example.distAPI.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -51,6 +52,50 @@ public class ProdutoController {
                 .map(produto -> new ResponseEntity<>(modelMapper.map(produto, ProdutoDTO.class), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProdutoDTO>> buscar(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) StatusProduto status) {
+        ModelMapper modelMapper = new ModelMapper();
+        List<Produto> produtos = service.buscar(nome, status);
+
+        List<ProdutoDTO> dtoList = produtos.stream()
+                .map(produto -> modelMapper.map(produto, ProdutoDTO.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtoList);
+    }
+
+    @PutMapping("/{id}")
+        public ResponseEntity<?> atualizar(
+                @PathVariable Long id,
+                @RequestBody ProdutoDTO dto) {
+
+            return service.obterPorId(id)
+                    .map(entity -> {
+
+                        try {
+
+                            Produto produto = converter(dto);
+                            produto.setId(entity.getId());
+
+                            service.salvar(produto);
+
+                            return ResponseEntity.ok(
+                                    ProdutoDTO.create(produto));
+
+                        } catch (RegraNegocioException e) {
+                            return ResponseEntity
+                                    .badRequest()
+                                    .body(e.getMessage());
+                        }
+
+                    }).orElseGet(() ->
+                            new ResponseEntity<>(
+                                    "Produto não encontrado",
+                                    HttpStatus.NOT_FOUND));
+        }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> excluir(@PathVariable("id") Long id) {
