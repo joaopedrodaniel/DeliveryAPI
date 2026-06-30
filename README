@@ -1,0 +1,379 @@
+# 🍻 DeliveryAPI - Sistema de Delivery de Bebidas
+
+API REST desenvolvida em **Java 17** utilizando **Spring Boot**, com autenticação via **JWT**, persistência em **PostgreSQL** e documentação automática através do **Swagger/OpenAPI**.
+
+O objetivo do projeto é gerenciar um sistema de delivery de bebidas, permitindo o cadastro de clientes, vendedores, administradores, produtos, pedidos, itens e endereços, além de controlar estoque e acompanhar o status dos pedidos.
+
+---
+
+## Tecnologias Utilizadas
+
+* Java 17
+* Spring Boot 3
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* JWT (JSON Web Token)
+* PostgreSQL
+* Lombok
+* ModelMapper
+* Swagger / OpenAPI
+* Maven
+
+---
+
+## Funcionalidades
+
+### Autenticação
+
+* Login utilizando JWT
+* Controle de acesso por autenticação
+* Criptografia de senhas utilizando BCrypt
+
+---
+
+### Administradores
+
+* Cadastro
+* Consulta
+* Atualização
+* Exclusão
+
+---
+
+### Clientes
+
+* Cadastro
+* Consulta
+* Atualização
+* Exclusão
+
+---
+
+### Vendedores
+
+* Cadastro
+* Consulta
+* Atualização
+* Exclusão
+
+---
+
+### Produtos
+
+* Cadastro de bebidas
+* Consulta
+* Atualização
+* Exclusão
+* Controle de estoque
+* Produtos ativos/inativos
+
+---
+
+### Pedidos
+
+* Criação de pedidos
+* Associação de cliente
+* Associação de vendedor
+* Associação de endereço
+* Atualização do status
+* Cancelamento
+* Histórico por cliente
+* Histórico por vendedor
+
+Status disponíveis:
+
+* PENDENTE
+* APROVADO
+* PREPARANDO
+* ENVIADO
+* ENTREGUE
+* CANCELADO
+
+---
+
+### Itens do Pedido
+
+* Cadastro
+* Consulta
+* Atualização
+* Exclusão
+
+Cada item contém:
+
+* Produto
+* Quantidade
+* Preço Unitário
+
+---
+
+### Endereços
+
+* Cadastro
+* Consulta
+* Atualização
+* Exclusão
+
+---
+
+### Relatórios
+
+Dashboard contendo:
+
+* Total de pedidos
+* Pedidos entregues
+* Pedidos cancelados
+* Total de produtos
+* Produtos sem estoque
+* Valor total do estoque
+
+---
+
+## Estrutura do Projeto
+
+```
+src
+ ├── api
+ │   ├── controller
+ │   └── dto
+ │
+ ├── config
+ │
+ ├── exception
+ │
+ ├── model
+ │   ├── entity
+ │   └── repository
+ │
+ ├── security
+ │
+ └── service
+```
+
+---
+
+## Modelo de Dados
+
+### Usuário
+
+Classe base para:
+
+* Administrador
+* Cliente
+* Vendedor
+
+Atributos:
+
+* id
+* nome
+* email
+* senha
+* perfil
+
+---
+
+### Produto
+
+* id
+* nome
+* preço
+* estoque
+* status
+
+---
+
+### Pedido
+
+* id
+* cliente
+* vendedor
+* endereço
+* status
+
+---
+
+### Item
+
+* id
+* pedido
+* produto
+* quantidade
+* preçoUnitário
+
+---
+
+### Endereço
+
+* id
+* cep
+* logradouro
+* número
+* complemento
+
+---
+
+## Segurança
+
+A autenticação é realizada através de JSON Web Token (JWT).
+
+Fluxo:
+
+1. Usuário realiza login
+2. API gera um Token JWT
+3. O Token deve ser enviado em todas as requisições protegidas
+
+Exemplo:
+
+```
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9...
+```
+
+---
+
+## Endpoints Principais
+
+### Autenticação
+
+| Método | Endpoint           |
+| ------ | ------------------ |
+| POST   | /api/v1/auth/login |
+
+---
+
+### Produtos
+
+| Método | Endpoint              |
+| ------ | --------------------- |
+| GET    | /api/v1/produtos      |
+| GET    | /api/v1/produtos/{id} |
+| POST   | /api/v1/produtos      |
+| PUT    | /api/v1/produtos/{id} |
+| DELETE | /api/v1/produtos/{id} |
+
+---
+
+### Pedidos
+
+| Método | Endpoint                      |
+| ------ | ----------------------------- |
+| GET    | /api/v1/pedidos               |
+| GET    | /api/v1/pedidos/{id}          |
+| POST   | /api/v1/pedidos               |
+| DELETE | /api/v1/pedidos/{id}          |
+| PATCH  | /api/v1/pedidos/{id}/status   |
+| PATCH  | /api/v1/pedidos/{id}/cancelar |
+| GET    | /api/v1/pedidos/cliente/{id}  |
+| GET    | /api/v1/pedidos/vendedor/{id} |
+
+---
+
+### Clientes
+
+| Método | Endpoint              |
+| ------ | --------------------- |
+| GET    | /api/v1/clientes      |
+| GET    | /api/v1/clientes/{id} |
+| POST   | /api/v1/clientes      |
+| PUT    | /api/v1/clientes/{id} |
+| DELETE | /api/v1/clientes/{id} |
+
+---
+
+### Vendedores
+
+| Método | Endpoint                |
+| ------ | ----------------------- |
+| GET    | /api/v1/vendedores      |
+| GET    | /api/v1/vendedores/{id} |
+| POST   | /api/v1/vendedores      |
+| PUT    | /api/v1/vendedores/{id} |
+| DELETE | /api/v1/vendedores/{id} |
+
+---
+
+### Endereços
+
+| Método | Endpoint               |
+| ------ | ---------------------- |
+| GET    | /api/v1/enderecos      |
+| GET    | /api/v1/enderecos/{id} |
+| POST   | /api/v1/enderecos      |
+| PUT    | /api/v1/enderecos/{id} |
+| DELETE | /api/v1/enderecos/{id} |
+
+---
+
+### Itens
+
+| Método | Endpoint           |
+| ------ | ------------------ |
+| GET    | /api/v1/itens      |
+| GET    | /api/v1/itens/{id} |
+| POST   | /api/v1/itens      |
+| PUT    | /api/v1/itens/{id} |
+| DELETE | /api/v1/itens/{id} |
+
+---
+
+### Relatórios
+
+| Método | Endpoint                     |
+| ------ | ---------------------------- |
+| GET    | /api/v1/relatorios/dashboard |
+
+---
+
+## Swagger
+
+Após iniciar a aplicação, a documentação estará disponível em:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## Banco de Dados
+
+Banco utilizado:
+
+* PostgreSQL
+
+Configuração no arquivo:
+
+```
+src/main/resources/application.properties
+```
+
+---
+
+## Executando o Projeto
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/joaopedrodaniel/DeliveryAPI.git
+```
+
+Acesse o diretório:
+
+```bash
+cd DeliveryAPI
+```
+
+Execute:
+
+```bash
+mvn clean install
+```
+
+Depois:
+
+```bash
+mvn spring-boot:run
+```
+
+---
+
+## Escopo
+Projeto desenvolvido para a disciplina de **Desenvolvimento Web-Backend**, utilizando Spring Boot e boas práticas na construção de APIs REST.
