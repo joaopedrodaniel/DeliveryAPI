@@ -17,14 +17,20 @@ public class ItemDTO {
     private Long idPedido;
     private Long idProduto;
     private String nomeProduto;
+    private ProdutoDTO produto;
 
     public static ItemDTO create(Item item){
         ModelMapper modelMapper = new ModelMapper();
         ItemDTO dto = modelMapper.map(item, ItemDTO.class);
 
-        dto.idPedido = item.getPedido().getId();
-        dto.idProduto = item.getProduto().getId();
-        dto.nomeProduto = item.getProduto().getNome();
+        if (item.getPedido() != null) {
+            dto.idPedido = item.getPedido().getId();
+        }
+        if (item.getProduto() != null) {
+            dto.idProduto = item.getProduto().getId();
+            dto.nomeProduto = item.getProduto().getNome();
+            dto.produto = ProdutoDTO.create(item.getProduto());
+        }
 
         return dto;
     }

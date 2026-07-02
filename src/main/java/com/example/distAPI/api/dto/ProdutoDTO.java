@@ -17,11 +17,13 @@ public class ProdutoDTO {
     private String nome;
     private Double preco;
     private Integer estoque;
-    private StatusProduto idStatus;
+    private String descricao;
+    private String foto;
+    private String categoria;
+    private StatusProduto status;
 
     public static ProdutoDTO create(Produto produto){
         ModelMapper modelMapper = new ModelMapper();
-        ProdutoDTO dto = modelMapper.map(produto, ProdutoDTO.class);
-        return dto;
+        return modelMapper.map(produto, ProdutoDTO.class);
     }
 }
