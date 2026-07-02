@@ -4,6 +4,8 @@ import com.example.distAPI.api.dto.VendedorDTO;
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Vendedor;
 import com.example.distAPI.service.VendedorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/vendedores")
+@Tag(name = "Vendedores", description = "Endpoints para cadastro e gerenciamento de vendedores")
 @RequiredArgsConstructor
 public class VendedorController {
 
     private final VendedorService service;
 
+    @Operation(summary = "Cadastrar vendedor", description = "Registra um novo vendedor para a plataforma.")
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody VendedorDTO dto) {
         try {

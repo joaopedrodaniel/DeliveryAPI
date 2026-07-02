@@ -6,6 +6,8 @@ import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Administrador;
 import com.example.distAPI.model.entity.Cliente;
 import com.example.distAPI.service.AdministradorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -17,11 +19,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/administradores")
+@Tag(name = "Administradores", description = "Endpoints para gerenciamento de usuários administradores")
 @RequiredArgsConstructor
 public class AdministradorController {
 
     private final AdministradorService service;
 
+    @Operation(summary = "Cadastrar administrador", description = "Cria um usuário administrador com privilégios de gestão.")
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody AdministradorDTO dto) {
         try {

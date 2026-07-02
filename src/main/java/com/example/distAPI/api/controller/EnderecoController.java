@@ -4,6 +4,8 @@ import com.example.distAPI.api.dto.EnderecoDTO;
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Endereco;
 import com.example.distAPI.service.EnderecoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/enderecos")
+@Tag(name = "Endereços", description = "Gerencia dados de endereço para entregas e clientes")
 @RequiredArgsConstructor
 public class EnderecoController {
 
     private final EnderecoService service;
 
+    @Operation(summary = "Cadastrar endereço", description = "Cria um novo endereço para associações de cliente ou entrega.")
     @PostMapping
     public ResponseEntity<?> salvar(@RequestBody EnderecoDTO dto) {
         try {

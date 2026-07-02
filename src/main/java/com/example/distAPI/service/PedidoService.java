@@ -19,11 +19,14 @@ public class PedidoService {
 
     private final PedidoRepository repository;
     private final ProdutoRepository produtoRepository;
+    private final DeliveryFeeService deliveryFeeService;
 
     public PedidoService(PedidoRepository repository,
-                         ProdutoRepository produtoRepository) {
+                         ProdutoRepository produtoRepository,
+                         DeliveryFeeService deliveryFeeService) {
         this.repository = repository;
         this.produtoRepository = produtoRepository;
+        this.deliveryFeeService = deliveryFeeService;
     }
 
     @Transactional
@@ -64,6 +67,10 @@ public class PedidoService {
 
         pedido.setValorTotal(total);
 
+        // calculate delivery fee and persist
+        Double taxa = deliveryFeeService.calcularTaxa(pedido.getEndereco());
+        pedido.setTaxaEntrega(taxa);
+
         return repository.save(pedido);
     }
 
@@ -73,6 +80,10 @@ public class PedidoService {
 
     public List<Pedido> listar() {
         return repository.findAll();
+    }
+
+    public List<Pedido> listarPorPeriodo(java.time.LocalDateTime inicio, java.time.LocalDateTime fim) {
+        return repository.findByDataPedidoBetween(inicio, fim);
     }
 
     public List<Pedido> listarPorCliente(Long idCliente) {

@@ -26,7 +26,7 @@ public class VendedorService {
     @Transactional
     public Vendedor salvar(Vendedor vendedor) {
         validar(vendedor);
-
+        
         vendedor.setSenha(passwordEncoder.encode(vendedor.getSenha()));
 
         vendedor.setPerfil(PerfilUsuario.VENDEDOR);

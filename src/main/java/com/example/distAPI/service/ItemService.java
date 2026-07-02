@@ -1,8 +1,10 @@
 package com.example.distAPI.service;
 
+import com.example.distAPI.api.dto.TopProdutoDTO;
 import com.example.distAPI.exception.RegraNegocioException;
 import com.example.distAPI.model.entity.Item;
 import com.example.distAPI.model.repository.ItemRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +41,13 @@ public class ItemService {
 
     public List<Item> listar() {
         return repository.findAll();
+    }
+
+    public List<TopProdutoDTO> produtosMaisVendidos(int top) {
+        if (top <= 0) {
+            return List.of();
+        }
+        return repository.findTopProdutosMaisVendidos(PageRequest.of(0, top));
     }
 
     @Transactional
