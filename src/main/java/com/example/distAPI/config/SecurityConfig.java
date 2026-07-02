@@ -56,7 +56,7 @@ public class SecurityConfig {
                     // Libera o login e o Swagger para todos
                     .requestMatchers("/api/v1/auth/login").permitAll()
                     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                    
+                    .requestMatchers("/error").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/vendedores").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/clientes").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/produtos/**")
@@ -68,7 +68,6 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/administradores/**")
                     .hasRole("ADMIN")
                     
-                    // Todo o resto precisa de autenticação (Token)
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
