@@ -13,9 +13,11 @@ import java.util.Optional;
 public class EnderecoService {
 
     private final EnderecoRepository repository;
+    private final EnderecoLookupService lookupService;
 
-    public EnderecoService(EnderecoRepository repository) {
+    public EnderecoService(EnderecoRepository repository, EnderecoLookupService lookupService) {
         this.repository = repository;
+        this.lookupService = lookupService;
     }
 
     @Transactional
@@ -23,13 +25,13 @@ public class EnderecoService {
         if (endereco.getId() == null) {
             throw new RegraNegocioException("Endereço não encontrado para atualização.");
         }
-        validar(endereco);
+        prepararEndereco(endereco);
         return repository.save(endereco);
     }
 
     @Transactional
     public Endereco salvar(Endereco endereco) {
-        validar(endereco);
+        prepararEndereco(endereco);
         return repository.save(endereco);
     }
 
@@ -50,9 +52,33 @@ public class EnderecoService {
     }
 
     public void validar(Endereco endereco) {
+        endereco.setCep(validarCep(endereco));
+        validarCamposObrigatorios(endereco);
+    }
+
+    private void prepararEndereco(Endereco endereco) {
+        endereco.setCep(validarCep(endereco));
+        lookupService.preencherPorCep(endereco.getCep(), endereco);
+        validarCamposObrigatorios(endereco);
+    }
+
+    private String validarCep(Endereco endereco) {
+        if (endereco == null) {
+            throw new RegraNegocioException("Endereço é obrigatório.");
+        }
         if (endereco.getCep() == null || endereco.getCep().trim().isEmpty()) {
             throw new RegraNegocioException("O CEP é obrigatório.");
         }
+
+        String cep = endereco.getCep().replaceAll("\\D", "");
+        if (cep.length() != 8) {
+            throw new RegraNegocioException("O CEP deve conter 8 dígitos.");
+        }
+
+        return cep;
+    }
+
+    private void validarCamposObrigatorios(Endereco endereco) {
         if (endereco.getLogradouro() == null || endereco.getLogradouro().trim().isEmpty()) {
             throw new RegraNegocioException("O logradouro é obrigatório.");
         }
